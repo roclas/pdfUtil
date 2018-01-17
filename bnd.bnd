@@ -1,0 +1,12 @@
+Bundle-Name: pdfUtil
+Bundle-SymbolicName: pdfUtil
+Bundle-Version: 1.0.0
+Export-Package: pdfUtil.constants
+
+#Export-Package: itextPortlet.helpers
+
+Bundle-ClassPath:.,lib/itext.jar
+  
+-includeresource:lib/itext.jar=itextpdf-*.jar
+
+Import-Package = com.liferay.portal.kernel.portlet.bridges.mvc;version="[1.0,2)",javax.crypto,javax.imageio,javax.imageio.metadata,javax.imageio.plugins.jpeg,javax.imageio.stream,javax.portlet;version="[2.0,3)",javax.security.auth.x500,javax.servlet;version="[3.0,4)",javax.servlet.http;version="[3.0,4)",javax.xml.crypto,javax.xml.crypto.dom,javax.xml.crypto.dsig,javax.xml.crypto.dsig.dom,javax.xml.crypto.dsig.keyinfo,javax.xml.crypto.dsig.spec,javax.xml.parsers,javax.xml.transform,javax.xml.transform.dom,javax.xml.transform.stream,!org.apache.jcp.xml.dsig.internal.dom,org.apache.xml.security.utils,!org.bouncycastle.asn1,!org.bouncycastle.asn1.cmp,!org.bouncycastle.asn1.cms,!org.bouncycastle.asn1.esf,!org.bouncycastle.asn1.ess,!org.bouncycastle.asn1.ocsp,!org.bouncycastle.asn1.pkcs,!org.bouncycastle.asn1.tsp,!org.bouncycastle.asn1.x500,!org.bouncycastle.asn1.x509,!org.bouncycastle.cert,!org.bouncycastle.cert.jcajce,!org.bouncycastle.cert.ocsp,!org.bouncycastle.cms,!org.bouncycastle.cms.jcajce,!org.bouncycastle.crypto,!org.bouncycastle.crypto.engines,!org.bouncycastle.crypto.modes,!org.bouncycastle.crypto.paddings,!org.bouncycastle.crypto.params,!org.bouncycastle.jcajce.provider.digest,!org.bouncycastle.jce,!org.bouncycastle.jce.provider,!org.bouncycastle.ocsp,!org.bouncycastle.operator,!org.bouncycastle.operator.bc,!org.bouncycastle.operator.jcajce,!org.bouncycastle.tsp,org.w3c.dom,org.xml.sax
