@@ -1,9 +1,11 @@
 package pdfUtil.portlet;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.StringReader;
 
 import com.itextpdf.text.Document;
@@ -13,6 +15,8 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.html.simpleparser.HTMLWorker;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 
 
 
@@ -47,22 +51,40 @@ public class iTextUtil {
 
     }
 
-   
-    public static byte[] createPDFfromHTML(String html){
-    	//String html = "<html><body> This is my Project </body></html>";
+    public static byte[] createPDFfromHTMLStream(OutputStream baos){
+    	InputStream inputStream = new ByteArrayInputStream(((ByteArrayOutputStream) baos).toByteArray());
+    	ByteArrayOutputStream outStream= new ByteArrayOutputStream();
+    	try {
+    		Document document = getDocument(outStream);
+    	    HTMLWorker htmlWorker = new HTMLWorker(document);
+    	    htmlWorker.parse(new InputStreamReader(inputStream, "UTF-8"));
+    	    document.close();
+            LOG.info("Done creating PDF from HTML");
+    	} catch (Exception e) {
+            LOG.error("Exception creating PDF from HTML");
+            LOG.error(baos.toString());
+    	    e.printStackTrace();
+    	}
+    	return outStream.toByteArray();
+    }
+
+
+    public static byte[] createPDFfromHTMLString(String html){
     	ByteArrayOutputStream stream = new ByteArrayOutputStream();
     	try {
     		Document document = getDocument(stream);
     	    HTMLWorker htmlWorker = new HTMLWorker(document);
     	    htmlWorker.parse(new StringReader(html));
     	    document.close();
-            System.out.println("Done creating PDF from HTML");
+    		LOG.info("Done creating PDF from HTML");
     	} catch (Exception e) {
-            System.out.println("Exception creating PDF from HTML");
+    		LOG.error("Exception creating PDF from HTML");
+    		LOG.error(html);
     	    e.printStackTrace();
     	}
     	return stream.toByteArray();
     }
+   
 
 
 	private static Document getDocument(ByteArrayOutputStream byteArrayOutputStream) throws DocumentException, FileNotFoundException {
@@ -72,7 +94,8 @@ public class iTextUtil {
 		return document;
 	}
 	
-	
+    private static final Log LOG = LogFactoryUtil.getLog(iTextUtil.class);
+
  
 
 }
