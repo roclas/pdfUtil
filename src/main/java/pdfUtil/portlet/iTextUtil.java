@@ -6,12 +6,16 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.StringReader;
+
+import javax.servlet.ServletContext;
+
+import org.apache.commons.io.IOUtils;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.html.simpleparser.HTMLWorker;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -51,13 +55,16 @@ public class iTextUtil {
 
     }
 
-    public static byte[] createPDFfromHTMLStream(OutputStream baos){
+
+    public static byte[] createPDFfromHTMLStream(OutputStream baos, ServletContext servletContext){
     	InputStream inputStream = new ByteArrayInputStream(((ByteArrayOutputStream) baos).toByteArray());
     	ByteArrayOutputStream outStream= new ByteArrayOutputStream();
     	try {
     		Document document = getDocument(outStream);
     	    HTMLWorker htmlWorker = new HTMLWorker(document);
+    	    //document.add(createImage(servletContext,LOGO)); //this would put it in the background
     	    htmlWorker.parse(new InputStreamReader(inputStream, "UTF-8"));
+    	    //document.add(createImage(servletContext,LOGO)); //this would put it in the background
     	    document.close();
             LOG.info("Done creating PDF from HTML");
     	} catch (Exception e) {
@@ -69,22 +76,22 @@ public class iTextUtil {
     }
 
 
-    public static byte[] createPDFfromHTMLString(String html){
-    	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    	try {
-    		Document document = getDocument(stream);
-    	    HTMLWorker htmlWorker = new HTMLWorker(document);
-    	    htmlWorker.parse(new StringReader(html));
-    	    document.close();
-    		LOG.info("Done creating PDF from HTML");
-    	} catch (Exception e) {
-    		LOG.error("Exception creating PDF from HTML");
-    		LOG.error(html);
-    	    e.printStackTrace();
-    	}
-    	return stream.toByteArray();
-    }
-   
+	private static Image createImage(ServletContext servletContext,String path) {
+		Image img=null;
+		try {
+			InputStream stream = servletContext.getResourceAsStream(path);
+			byte[] bytes = IOUtils.toByteArray(stream);
+			img = Image.getInstance(bytes);//TODO: uncomment
+        	img.scaleToFit(770, 523);
+        	float offsetX = (770 - img.getScaledWidth()) / 2;
+        	float offsetY = (523 - img.getScaledHeight()) / 2;
+        	//img.setAbsolutePosition(36 + offsetX, 36 + offsetY);
+        	img.setAbsolutePosition(0, 0);
+		} catch (Exception e1) {
+			e1.printStackTrace(); 
+		}
+		return img;
+	}
 
 
 	private static Document getDocument(ByteArrayOutputStream byteArrayOutputStream) throws DocumentException, FileNotFoundException {

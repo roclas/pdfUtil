@@ -26,5 +26,7 @@ dependencies {
 	compileInclude group: 'com.itextpdf', name: 'itextpdf', version: '5.5.12'
 	testCompile group: 'com.itextpdf', name: 'itextpdf', version: '5.5.12'
 	compileOnly group: "com.liferay", name: "org.freemarker", version: "2.3.23.LIFERAY-PATCHED-4"
+	compileOnly group: 'commons-io', name: 'commons-io', version: '1.4'
+	compileInclude group: 'commons-io', name: 'commons-io', version: '1.4'
 	
 }

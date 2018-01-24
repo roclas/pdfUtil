@@ -9,10 +9,13 @@ import java.util.Map;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
+import com.liferay.portal.kernel.util.PortalUtil;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
@@ -24,7 +27,7 @@ import pdfUtil.constants.PdfUtilPortletKeys;
 public class PrintPDFResourceCommand implements MVCResourceCommand {
 	
 	private String templateLocation="/META-INF/resources/freemarker/template.ftl";
-
+	private static String logoLocation="freemarker/logo.png";
 
 	@Override
 	public boolean serveResource(ResourceRequest resourceRequest, ResourceResponse resourceResponse)
@@ -33,8 +36,7 @@ public class PrintPDFResourceCommand implements MVCResourceCommand {
 		//String html="<html><body> This is my Project </body></html>";
 		Map<String,Object> data=new HashMap<String,Object>();
 		Map<String,Object> myMap=new HashMap<String,Object>();
-		myMap.put("myVariable1", "1");
-		myMap.put("myVariable2", "2");
+		for(int i=0;i<15;i++) myMap.put(String.format("My variable %02d", i),i);
 
 		OutputStream baos=new ByteArrayOutputStream();
 
@@ -45,14 +47,23 @@ public class PrintPDFResourceCommand implements MVCResourceCommand {
 
 	        Configuration config = new Configuration();
 	        config.setTemplateLoader(new ClassTemplateLoader(getClass(), "/"));
-			data.put("name", "My Name");
-			data.put("body", "Lorem ipsum ...... 1, 2, 3, 4, 5");
-			data.put("myMap", myMap);
+	        
+	        
+	        HttpServletRequest request = PortalUtil.getHttpServletRequest(resourceRequest);
+	        ServletContext servletContext = request.getSession().getServletContext();
+
 
 	        Template template = config.getTemplate(templateLocation);
+	        //config.getTemplate(templateLocation).getSourceName();
+			data.put("basepath", servletContext.getContextPath().toString());
+			data.put("port", (new Integer(request.getLocalPort())).toString());
+			data.put("server", request.getServerName());
+			data.put("logo", logoLocation);
+			data.put("data", myMap);
+
 			template.process(data,new OutputStreamWriter(baos));
-			byte[] bytes=iTextUtil.createPDFfromHTMLStream(baos);
-	
+			byte[] bytes=iTextUtil.createPDFfromHTMLStream(baos, servletContext);
+			//byte[] bytes=PdfUtil.createPDFfromHTMLString(baos.toString());
 			outputStream.write(bytes);
 			outputStream.flush();
 		} catch (Exception e) {
