@@ -1,3 +1,5 @@
+apply plugin: 'java'
+
 configurations {
     extraLibs {
         description = "application embedded libraries"
@@ -9,9 +11,17 @@ configurations {
 }
 
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
 
-
-dependencies {
+allprojects {
+    repositories {
+        jcenter()
+    }
+    dependencies {
   	testCompile 'junit:junit:4.12'
   	compile 'junit:junit:4.12'
 	
@@ -29,4 +39,8 @@ dependencies {
 	compileOnly group: 'commons-io', name: 'commons-io', version: '1.4'
 	compileInclude group: 'commons-io', name: 'commons-io', version: '1.4'
 	
+    }
 }
+
+
+
